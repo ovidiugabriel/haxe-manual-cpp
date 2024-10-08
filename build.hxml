@@ -1,6 +1,6 @@
 -cp src/
 -v
-hxparser.Tokenizer
+syntax.Tokenizer
 cgenerator.CGenerator
 -main Main
 -D HXCPP_M64

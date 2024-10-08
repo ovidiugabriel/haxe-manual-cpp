@@ -8,7 +8,7 @@
 // Haxe generated code from C/C++.
 //
 
-import hxparser.Tokenizer;
+import syntax.Tokenizer;
 
 class Main {
     static public function main() {

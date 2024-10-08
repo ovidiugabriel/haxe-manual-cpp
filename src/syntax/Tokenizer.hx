@@ -1,7 +1,7 @@
-package hxparser;
+package syntax;
 
 import sys.io.File;
-import cgenerator.CGenerator;
+import cgenerator.CGenerator.*;
 
 class Tokenizer {
     // List of common Haxe keywords
@@ -14,6 +14,7 @@ class Tokenizer {
 
     private static var state : Int = 0;
     private static var functionAttributes : Array<String>;
+    private static var isMainFunction : Bool = false;
 
     private static var packageName : String;
     private static var className : String;
@@ -62,8 +63,7 @@ class Tokenizer {
     private static function onStateFunction(token : String) {
         if ('{' == token) {
             state = STATE_FUNCTION_BODY;
-
-            CGenerator.emitFunction(packageName, className, functionName, functionAttributes);
+            isMainFunction ? emitMain() : emitFunction(packageName, className, functionName, functionAttributes);
             return;
         }
 
@@ -98,10 +98,12 @@ class Tokenizer {
     }
 
     public static function tokenize(filePath : String, isMain : Bool) {
-        try {
-            final content : String = File.getContent(filePath);
+        isMainFunction = isMain;
 
-            var ereg : EReg = new EReg("[^a-zA-Z0-9_{};]+", "gm");
+        try {
+            final content = File.getContent(filePath);
+
+            var ereg = new EReg("[^a-zA-Z0-9_{};]+", "gm");
             var tokens = ereg.split(content);
 
             for (token in tokens) {
