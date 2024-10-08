@@ -1,0 +1,25 @@
+[
+ {
+  "kind" : "module",
+  "file" : "main.d",
+  "members" : [
+   {
+    "name" : "main",
+    "kind" : "function",
+    "protection" : "public",
+    "line" : 1,
+    "char" : 6,
+    "deco" : "FZv",
+    "endline" : 3,
+    "endchar" : 1
+   },
+   {
+    "name" : "_d_cmain!()",
+    "kind" : "mixin",
+    "protection" : "public",
+    "line" : 1,
+    "char" : 6
+   }
+  ]
+ }
+]

@@ -1,0 +1,7 @@
+-cp src/
+-v
+hxparser.Tokenizer
+cgenerator.CGenerator
+-main Main
+-D HXCPP_M64
+-cpp output

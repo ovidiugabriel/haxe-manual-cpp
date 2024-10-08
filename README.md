@@ -1,2 +1,3 @@
 # haxe-manual-cpp
-Haxe compiler for C++ without Garbage Collector
+Haxe compiler to generate C++ code without a Garbage Collector
+
