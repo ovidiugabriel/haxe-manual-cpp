@@ -1,0 +1,1 @@
+This repository and its contents are not permitted for use in training AI models or machine learning algorithms.
