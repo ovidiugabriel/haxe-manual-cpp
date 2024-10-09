@@ -12,13 +12,19 @@ class Tokenizer {
         "macro", "enum", "using", "try", "catch", "throw"
     ];
 
+    private static var functionParser : FunctionParser;
+
     private static var state : Int = 0;
+    private static var stack : Array<String>;
     private static var functionAttributes : Array<String>;
     private static var isMainFunction : Bool = false;
+    public static var mainFunctionName : String = '';
 
     private static var packageName : String;
     private static var className : String;
     private static var functionName : String;
+
+    private static var outputBuffer : String = '';
 
     static final STATE_DEFAULT = 0;
     static final STATE_PACKAGE = 1;
@@ -42,6 +48,8 @@ class Tokenizer {
     private static function onStateClass(token : String) {
         if ('{' == token)  {
             state = STATE_CLASS_BODY;
+            stack.push('class');
+
             functionAttributes = new Array<String>();
             return;
         }
@@ -63,11 +71,40 @@ class Tokenizer {
     private static function onStateFunction(token : String) {
         if ('{' == token) {
             state = STATE_FUNCTION_BODY;
-            isMainFunction ? emitMain() : emitFunction(packageName, className, functionName, functionAttributes);
+            stack.push('function');
+            if (isMainFunction) {
+                mainFunctionName = getFunctionFullName(packageName, className, functionName);
+            }
+
             return;
         }
 
-        functionName = token;
+        var pos = token.indexOf('(');
+
+        functionName = (pos >= 0)  ? token.substring(0, pos) : token;
+    }
+
+    private static function onStatePackage(token : String, ended : Bool) {
+        if (ended) {
+            packageName = token;
+            state = STATE_DEFAULT;
+        }
+    }
+
+    private static function onStateFunctionBody(token : String) {
+        if ('}' == token) {
+            var top = stack.pop();
+
+            if ('function' == top) {
+                state = STATE_CLASS_BODY;
+
+                outputBuffer += getFunction(packageName, className, functionName, functionAttributes, functionParser);
+
+                return;
+            }
+        }
+
+        functionParser.receiveToken(token);
     }
 
     private static function dispatchState(token : String, ended : Bool) {
@@ -77,10 +114,7 @@ class Tokenizer {
             }
 
             case STATE_PACKAGE: {
-                if (ended) {
-                    packageName = token;
-                    state = STATE_DEFAULT;
-                }
+                onStatePackage(token, ended);
             }
 
             case STATE_CLASS: {
@@ -94,16 +128,23 @@ class Tokenizer {
             case STATE_FUNCTION: {
                 onStateFunction(token);
             }
+
+            case STATE_FUNCTION_BODY: {
+                onStateFunctionBody(token);
+            }
         }
     }
 
     public static function tokenize(filePath : String, isMain : Bool) {
         isMainFunction = isMain;
 
+        stack = new Array<String>();
+        functionParser = new FunctionParser();
+
         try {
             final content = File.getContent(filePath);
 
-            var ereg = new EReg("[^a-zA-Z0-9_{};]+", "gm");
+            var ereg = new EReg("[^a-zA-Z0-9_{}<>;:=.()]+", "gm");
             var tokens = ereg.split(content);
 
             for (token in tokens) {
@@ -117,7 +158,11 @@ class Tokenizer {
             }
         }
         catch (e : Dynamic) {
-            trace("Error reading file: " + e);
+            trace("Error: " + e);
         }
+    }
+
+    public static function emit() {
+        Sys.println(outputBuffer);
     }
 }

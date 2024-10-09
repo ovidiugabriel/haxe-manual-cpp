@@ -9,11 +9,18 @@
 //
 
 import syntax.Tokenizer;
+import cgenerator.CGenerator.*;
 
 class Main {
     static public function main() {
         // Get the command-line arguments (not inluding the command name)
         final args : Array<String> = Sys.args();
         Tokenizer.tokenize(args[0], true);
+
+        emitIncludes();
+
+        Tokenizer.emit();
+
+        Sys.print(getMainCall(Tokenizer.mainFunctionName));
     }
 }
