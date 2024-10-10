@@ -12,11 +12,15 @@ class CGenerator {
 
     static private var includes : Array<String> = null;
 
-    static public function emitIncludes() {
-        for (include in includes) {
-            Sys.println('#include "${include}"');
+    static public function getIncludes() {
+        var out = '';
+
+        if (null != includes) {
+            for (include in includes) {
+                out += '#include "${include}"\n';
+            }
         }
-        Sys.println('');
+        return out + "\n";
     }
 
     static public function addInclude(include : String) {

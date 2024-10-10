@@ -5,12 +5,39 @@ import cgenerator.CGenerator.*;
 
 class Tokenizer {
     // List of common Haxe keywords
+    // Complete list on https://github.com/HaxeFoundation/haxe/blob/development/src/syntax/lexer.ml
+
     private static var keywords = [
         "var", "function", "class", "if", "else", "for", "while", "do", "switch",
         "case", "default", "break", "continue", "return", "import", "package",
         "static", "public", "private", "new", "extends", "implements", "typedef",
         "macro", "enum", "using", "try", "catch", "throw"
     ];
+    /*
+    private static var keywords = [
+
+        // type decl
+	    "package", "import", "using", "class", "interface", "enum", "abstract",
+	    "typedef",
+
+	    // relations
+        "extends", "implements",
+
+        // modifier
+	    "extern", "static", "public", "private", "override", "dynamic", "inline",
+	    "macro", "final", "operator", "overload",
+
+        // fields
+	    "function", "var",
+
+         // values
+	    "null", "true", "false", "this",
+
+        // expr
+	    "if", "else", "while", "do", "for", "break", "continue", "return",
+        "switch", "case", "default", "throw", "try", "catch", "untyped", "new",
+        "in", "cast"];
+        */
 
     private static var functionParser : FunctionParser;
 
@@ -92,6 +119,7 @@ class Tokenizer {
     }
 
     private static function onStateFunctionBody(token : String) {
+        // trace('token=', token);
         if ('}' == token) {
             var top = stack.pop();
 
@@ -141,28 +169,23 @@ class Tokenizer {
         stack = new Array<String>();
         functionParser = new FunctionParser();
 
-        try {
-            final content = File.getContent(filePath);
+        final content = File.getContent(filePath);
 
-            var ereg = new EReg("[^a-zA-Z0-9_{}<>;:=.()]+", "gm");
-            var tokens = ereg.split(content);
+        var ereg = new EReg("[^a-zA-Z0-9_{}<>;:=.()]+", "gm");
+        var tokens = ereg.split(content);
 
-            for (token in tokens) {
-                token = StringTools.trim(token);
-                final ended = StringTools.endsWith(token, ';');
-                if (ended) {
-                    token = token.substr(0, -1);
-                }
-
-                dispatchState(token, ended);
+        for (token in tokens) {
+            token = StringTools.trim(token);
+            final ended = StringTools.endsWith(token, ';');
+            if (ended) {
+                token = token.substr(0, -1);
             }
-        }
-        catch (e : Dynamic) {
-            trace("Error: " + e);
+
+            dispatchState(token, ended);
         }
     }
 
-    public static function emit() {
-        Sys.println(outputBuffer);
+    public static function getOutputBuffer() {
+        return outputBuffer;
     }
 }

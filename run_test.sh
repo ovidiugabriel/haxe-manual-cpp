@@ -1,5 +1,4 @@
 #!/bin/bash
-set -x
 
 if [ "$1" == "" ] ; then
     echo "Missing input file"
@@ -9,26 +8,35 @@ PATH="$PATH:/c/msys64/mingw64/bin"
 
 CXX=x86_64-w64-mingw32-g++.exe
 
-if [ -f output/a.exe ] ; then
-    rm output/a.exe
+OUTPUT=output/cgen/a.exe
+OUT_DIR=$(dirname $OUTPUT)
+CPPFILE=$OUT_DIR/_test.cpp
+
+set -x
+if [ -f $OUTPUT ] ; then
+    rm $OUTPUT
 fi
 
-if [ ! -d output/cgen ] ; then
-    mkdir output/cgen
+if [ ! -d $OUTDIR ] ; then
+    mkdir -p $OUTDIR
 fi
 
-if [ -f output/cgen/_test.cpp ] ; then
-    rm output/cgen/_test.cpp
+if [ -e $CPPFILE ] ; then
+    rm $CPPFILE
 fi
 
-output/Main.exe $1 > output/cgen/_test.cpp
+hl output/Main.hl $1 $CPPFILE
+if [ ! -e $CPPFILE ] ; then
+    exit 1
+fi
+ls -al $CPPFILE
 
 # Compile the C file to an executable
-$CXX -I. output/cgen/_test.cpp -o output/cgen/a.exe -lstdc++
+$CXX -I. $CPPFILE -o $OUTPUT -lstdc++
 if [ "$?" != "0" ] ; then
     exit 1
 fi
 
-ls -al output/cgen/a.exe
-output/cgen/a.exe
+ls -al $OUTPUT
+$OUTPUT
 echo "$?"

@@ -8,8 +8,13 @@
 // Haxe generated code from C/C++.
 //
 
+import sys.io.File;
+
+// Project specific imports
+
 import syntax.Tokenizer;
 import cgenerator.CGenerator.*;
+import syntax.Rules;
 
 class Main {
     static public function main() {
@@ -17,10 +22,12 @@ class Main {
         final args : Array<String> = Sys.args();
         Tokenizer.tokenize(args[0], true);
 
-        emitIncludes();
+        var out = getIncludes();
+        out += Tokenizer.getOutputBuffer();
+        out += getMainCall(Tokenizer.mainFunctionName);
 
-        Tokenizer.emit();
-
-        Sys.print(getMainCall(Tokenizer.mainFunctionName));
+        var file = File.write(args[1], true);
+        file.writeString(out);
+        file.close();
     }
 }

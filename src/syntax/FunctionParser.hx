@@ -66,6 +66,12 @@ class FunctionParser {
     }
 
     public function getFunctionBody() {
-        return getVariableDeclaration(variableDeclaration);
+        //  Naive example of function containing a variable declaration
+        if (null != variableDeclaration) {
+            return getVariableDeclaration(variableDeclaration);
+        }
+
+        // Function body is empty
+        return '';
     }
 }
