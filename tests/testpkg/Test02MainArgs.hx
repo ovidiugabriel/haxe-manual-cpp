@@ -1,6 +1,6 @@
-package test;
+package testpkg;
 
-class Main {
+class Test02MainArgs {
     static public function main() {
         var args : Array<String> = Sys.args();
     }

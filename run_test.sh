@@ -25,6 +25,18 @@ if [ -e $CPPFILE ] ; then
     rm $CPPFILE
 fi
 
+# first validate the input
+
+TEST_DIR=$(dirname $1)
+pushd $TEST_DIR/..
+
+filename=$(basename $1)
+CLASSNAME="${filename%.*}"
+
+haxe -main testpkg.$CLASSNAME
+
+popd
+
 hl output/Main.hl $1 $CPPFILE
 if [ ! -e $CPPFILE ] ; then
     exit 1

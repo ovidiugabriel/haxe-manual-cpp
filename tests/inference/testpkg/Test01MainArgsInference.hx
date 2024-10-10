@@ -1,7 +1,8 @@
-package test;
+package testpkg;
 
-class Main {
+class Test01MainArgsInference {
     static public function main() {
         var args = Sys.args();
+        trace(args);
     }
 }

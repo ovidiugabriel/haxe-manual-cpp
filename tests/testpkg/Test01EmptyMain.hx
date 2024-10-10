@@ -1,6 +1,6 @@
-package test;
+package testpkg;
 
-class Main {
+class Test01EmptyMain {
     static public function main() {
 
     }

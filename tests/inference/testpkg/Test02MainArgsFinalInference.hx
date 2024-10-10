@@ -1,6 +1,6 @@
-package test;
+package testpkg;
 
-class Main {
+class Test02MainArgsFinalInference {
     static public function main() {
         final args = Sys.args();
     }
